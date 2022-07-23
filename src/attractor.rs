@@ -27,13 +27,13 @@ impl Swarm {
 
 #[derive(Debug)]
 pub struct Raster {
-    counts: Vec<f64>,
+    density: Vec<f64>,
 }
 
 impl Raster {
     pub fn new(swarm: &Swarm, width: usize, height: usize) -> Self {
         let mut me = Self {
-            counts: vec![0.0; width * height]
+            density: vec![0.0; width * height]
         };
 
         let xmin = swarm
@@ -65,14 +65,14 @@ impl Raster {
         for point in &swarm.points {
             let x = ((point.x - xmin) / xstep).floor() as usize;
             let y = ((point.y - ymin) / ystep).floor() as usize;
-            me.counts[x + y * width] += 1.0;
+            me.density[x + y * width] += 1.0;
         }
 
         let max_count = me
-            .counts
+            .density
             .iter()
             .fold(0.0, |acc: f64, count| acc.max(*count));
-        me.counts.iter_mut().for_each(|x| {
+        me.density.iter_mut().for_each(|x| {
             *x /= max_count;
         });
 
@@ -104,8 +104,8 @@ mod tests {
         s.add(super::Point { x: 0., y: 3. });
 
         let x = super::Raster::new(&s, 2, 2);
-        assert_eq!(x.counts[0], 0.0);
-        assert_eq!(x.counts[1], 0.5);
-        assert_eq!(x.counts[2], 1.0); 
-        assert_eq!(x.counts[3], 0.5);     }
+        assert_eq!(x.density[0], 0.0);
+        assert_eq!(x.density[1], 0.5);
+        assert_eq!(x.density[2], 1.0); 
+        assert_eq!(x.density[3], 0.5);     }
 }

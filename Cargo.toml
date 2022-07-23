@@ -7,3 +7,11 @@ edition = "2021"
 
 [dependencies]
 eframe = "0.18.0"
+
+[lib]
+name = "attractor"
+path = "src/lib.rs"
+
+[[bin]]
+name = "attractor"
+path = "src/main.rs"
