@@ -1,3 +1,5 @@
-mod point;
-mod swarm;
-mod raster;
+pub mod point;
+pub mod swarm;
+pub mod raster;
+pub mod quadratic2d;
+pub mod image;

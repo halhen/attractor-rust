@@ -4,12 +4,29 @@ use super::swarm::Swarm;
 #[derive(Debug)]
 pub struct Raster {
     density: Vec<f64>,
+
+    width: usize,
+    height: usize
 }
 
 impl Raster {
+    pub fn height(&self) -> usize {
+        self.height
+    }
+
+    pub fn width(&self) -> usize {
+        self.width
+    }
+
+    pub fn intensity(&self, x: u32, y: u32) -> f64 {
+        self.density[(x + y * self.width as u32) as usize]
+    }
+
     pub fn new(swarm: &Swarm, width: usize, height: usize) -> Self {
         let mut me = Self {
-            density: vec![0.0; width * height]
+            density: vec![0.0; width * height],
+            width: width,
+            height: height
         };
 
         let xmin = swarm
