@@ -1,2 +1,4 @@
-pub mod app;
-pub mod image_widget;
+mod app;
+mod image_widget;
+
+pub use app::run;
