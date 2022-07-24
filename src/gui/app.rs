@@ -4,6 +4,8 @@ use crate::attractor::{self, quadratic2d};
 #[derive(Debug)]
 pub struct App {
     params: [f64; 12],
+    // Average # iterations per pixel of render
+    iterations_per_pixel: f64,
 
     // Cached results
     swarm: Option<attractor::swarm::Swarm>,
@@ -20,6 +22,7 @@ impl App {
         cc.egui_ctx.set_style(style);
         Self {
             params: [1., 0., -1.4, 0., 0.3, 0., 0., 1., 0., 0., 0., 0.],
+            iterations_per_pixel: 1.0,
             swarm: None,
             raster: None,
             image: None
@@ -30,7 +33,7 @@ impl App {
     fn refresh_render(&mut self, width: usize, height: usize) {
          match self.swarm {
             Some(_) => {},
-            None => self.swarm = Some(attractor::quadratic2d::generate(&self.params, 1_000_000))
+            None => self.swarm = Some(attractor::quadratic2d::generate(&self.params, ((width * height) as f64 * self.iterations_per_pixel) as usize))
         };
 
         match self.raster {
@@ -43,7 +46,7 @@ impl App {
             None => self.image = Some(attractor::image::render(
                 &self.raster.as_ref().unwrap(),
                 attractor::image::Scaling::Sqrt,
-                colorgrad::inferno()
+                colorgrad::blues()
             ))
         };
     }
@@ -54,13 +57,20 @@ impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             
-            let button_response = ui.button("Randomize");
-            if button_response.clicked() {
+            if ui.button("Randomize").clicked() {
                 println!("Randomize");
                 self.swarm = None;
                 self.raster = None;
                 self.image = None;
                 self.params = attractor::lyapunov::random_chaotic_params();
+            }
+
+            ui.add(egui::DragValue::new(&mut self.iterations_per_pixel).clamp_range(0.1..=100.0).speed(0.1));
+
+            if ui.button("Redraw").clicked() {
+                self.swarm = None;
+                self.raster = None;
+                self.image = None;
             }
 
             self.refresh_render(

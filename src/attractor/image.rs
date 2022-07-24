@@ -33,7 +33,7 @@ pub fn render(raster: &Raster, scaling: Scaling, colors: Gradient) -> image::Ima
     if intensity == 0. {
       image::Rgba([0, 0, 0, 255])
     } else {
-      image::Rgba(colors.at(intensity).to_rgba8())
+      image::Rgba(colors.at(1.0 - intensity).to_rgba8())
     }
   };
 
