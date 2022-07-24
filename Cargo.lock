@@ -77,6 +77,7 @@ dependencies = [
  "colorgrad",
  "eframe",
  "image",
+ "rand",
 ]
 
 [[package]]
