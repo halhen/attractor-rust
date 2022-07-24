@@ -1,5 +1,6 @@
 use eframe::egui;
-use crate::attractor::{quadratic2d::generate, raster::Raster, image::render, image::Scaling, image::Palette};
+use crate::attractor::{quadratic2d::generate, raster::Raster, image::render, image::Scaling};
+use colorgrad;
 
 pub struct ImageWidget {
   
@@ -22,12 +23,12 @@ impl egui::Widget for ImageWidget {
   fn ui(self, ui: &mut egui::Ui) -> egui::Response {
     let size = ui.available_size();
     let params = [-0.16, -0.37, -0.27, 0.16, -0.66, -0.74, -1.11, -0.51, 0.59, 0.81, -0.06, -0.44];
-    let swarm = generate(&params, 100_000);
+    let swarm = generate(&params, 1_000_000);
     let raster = Raster::new(&swarm, size.x as usize, size.y as usize);
     let image = render(
       &raster,
-      Scaling::LOG,
-      Palette::GRAY
+      Scaling::LINEAR,
+      colorgrad::plasma()
     );
 
     let size = [image.width() as _, image.height() as _];
