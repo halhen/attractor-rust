@@ -18,6 +18,10 @@ impl Raster {
         self.width
     }
 
+    pub fn intensities(&self) -> &Vec<f64> {
+        &self.density
+    }
+
     pub fn intensity(&self, x: u32, y: u32) -> f64 {
         self.density[(x + y * self.width as u32) as usize]
     }

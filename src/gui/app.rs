@@ -1,5 +1,4 @@
 use eframe::egui;
-use rand::Rng;
 use crate::attractor::{self, quadratic2d};
 
 #[derive(Debug)]
@@ -26,7 +25,7 @@ impl App {
     fn refresh_render(&mut self, width: usize, height: usize) {
          match self.swarm {
             Some(_) => {},
-            None => self.swarm = Some(attractor::quadratic2d::generate(&self.params, 100_000))
+            None => self.swarm = Some(attractor::quadratic2d::generate(&self.params, 1_000_000))
         };
 
         match self.raster {
@@ -38,8 +37,8 @@ impl App {
             Some(_) => {},
             None => self.image = Some(attractor::image::render(
                 &self.raster.as_ref().unwrap(),
-                attractor::image::Scaling::LINEAR,
-                colorgrad::greys()
+                attractor::image::Scaling::LOG,
+                colorgrad::blues()
             ))
         };
     }
@@ -56,12 +55,8 @@ impl eframe::App for App {
                 self.swarm = None;
                 self.raster = None;
                 self.image = None;
-                let mut rng = rand::thread_rng();
 
-                for i in 0..self.params.len() {
-                    self.params[i] = rng.gen_range(-1.5..=1.5);
-                }
-                println!("{:?}", self.params);
+                self.params = attractor::lyapunov::random_chaotic_params();
             }
 
             self.refresh_render(
