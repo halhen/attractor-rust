@@ -12,7 +12,12 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
+    pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        let style = egui::Style {
+            visuals: egui::Visuals::dark(),
+            ..egui::Style::default()
+        };
+        cc.egui_ctx.set_style(style);
         Self {
             params: [1., 0., -1.4, 0., 0.3, 0., 0., 1., 0., 0., 0., 0.],
             swarm: None,
@@ -37,8 +42,8 @@ impl App {
             Some(_) => {},
             None => self.image = Some(attractor::image::render(
                 &self.raster.as_ref().unwrap(),
-                attractor::image::Scaling::LOG,
-                colorgrad::blues()
+                attractor::image::Scaling::Sqrt,
+                colorgrad::inferno()
             ))
         };
     }
@@ -55,7 +60,6 @@ impl eframe::App for App {
                 self.swarm = None;
                 self.raster = None;
                 self.image = None;
-
                 self.params = attractor::lyapunov::random_chaotic_params();
             }
 

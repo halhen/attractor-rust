@@ -42,8 +42,8 @@ impl Raster {
             .iter()
             .fold(f64::NEG_INFINITY, |acc, p| acc.max(p.x));
         let xrange = xmax - xmin;
-        let xmin = xmin - xrange * 1.05;
-        let xmax = xmax + xrange * 1.05;
+        let xmin = xmin - xrange * 0.1;
+        let xmax = xmax + xrange * 0.1;
         let xstep = (xmax - xmin) / (width as f64);
 
         let ymin = swarm
@@ -55,8 +55,8 @@ impl Raster {
             .iter()
             .fold(f64::NEG_INFINITY, |acc, p| acc.max(p.y));
         let yrange = ymax - ymin;
-        let ymin = ymin - yrange * 1.05;
-        let ymax = ymax + yrange * 1.05;
+        let ymin = ymin - yrange * 0.1;
+        let ymax = ymax + yrange * 0.1;
         let ystep = (ymax - ymin) / (height as f64);
 
         for point in swarm.points().iter() {

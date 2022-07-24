@@ -37,7 +37,8 @@ pub fn random_chaotic_params() -> Params {
   
   loop {
     for i in 0..candidate.len() {
-      candidate[i] = rng.gen_range(-1.5..=1.5);
+      // Three decimals precision
+      candidate[i] = f64::round(rng.gen_range(-1.5..=1.5) * 1000.0) / 1000.0;
     }
 
     // Check that the lyapunov exponent indicates chaos
