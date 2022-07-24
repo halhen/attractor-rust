@@ -4,6 +4,7 @@ use image::ImageBuffer;
 use colorgrad::Gradient;
 
 type ScalingFunction = dyn Fn(f64) -> f64;
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Scaling {
   Binary,
   Linear,
@@ -17,6 +18,7 @@ fn scaler(scaling: Scaling) -> Box<ScalingFunction> {
     Scaling::Linear => |x| x,
     Scaling::Sqrt => |x| f64::sqrt(x),
     Scaling::Log => |x| f64::log2(x + 1.),
+    // TODO: Make Log make a more powerful impact
   };
 
   Box::new(function)

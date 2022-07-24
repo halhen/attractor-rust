@@ -1,11 +1,11 @@
 use eframe::egui;
-use crate::attractor::{self, quadratic2d};
+use crate::attractor::{self, quadratic2d, image::Scaling};
 
-#[derive(Debug)]
 pub struct App {
     params: [f64; 12],
     // Average # iterations per pixel of render
     iterations_per_pixel: f64,
+    scaling: Scaling,
 
     // Cached results
     swarm: Option<attractor::swarm::Swarm>,
@@ -23,6 +23,7 @@ impl App {
         Self {
             params: [1., 0., -1.4, 0., 0.3, 0., 0., 1., 0., 0., 0., 0.],
             iterations_per_pixel: 1.0,
+            scaling: Scaling::Linear,
             swarm: None,
             raster: None,
             image: None
@@ -45,7 +46,7 @@ impl App {
             Some(_) => {},
             None => self.image = Some(attractor::image::render(
                 &self.raster.as_ref().unwrap(),
-                attractor::image::Scaling::Sqrt,
+                self.scaling,
                 colorgrad::blues()
             ))
         };
@@ -66,7 +67,15 @@ impl eframe::App for App {
             }
 
             ui.add(egui::DragValue::new(&mut self.iterations_per_pixel).clamp_range(0.1..=100.0).speed(0.1));
-
+            egui::ComboBox::from_label("Scaling")
+            .selected_text(format!("{:?}", self.scaling))
+            .show_ui(ui, |ui| {
+                ui.selectable_value(&mut self.scaling, Scaling::Binary, "Binary");
+                ui.selectable_value(&mut self.scaling, Scaling::Linear, "Linear");
+                ui.selectable_value(&mut self.scaling, Scaling::Sqrt, "Sqrt");
+                ui.selectable_value(&mut self.scaling, Scaling::Log, "Log");
+            });
+            
             if ui.button("Redraw").clicked() {
                 self.swarm = None;
                 self.raster = None;
