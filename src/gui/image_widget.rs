@@ -1,6 +1,4 @@
 use eframe::egui;
-use crate::attractor::{quadratic2d::generate, raster::Raster, image::render, image::Scaling};
-use colorgrad;
 
 pub struct ImageWidget<'a> {
   image: &'a Option<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>>

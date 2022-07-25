@@ -18,11 +18,11 @@ pub fn exponent(params: &Params, iterations: usize) -> f64 {
 
     let distance = (f64::powi(point.x - point2.x, 2) + f64::powi(point.y - point2.y, 2)).sqrt();
     if distance == 0.0 {
-      return(f64::NEG_INFINITY);
+      return f64::NEG_INFINITY;
     }
 
     if distance.abs() == f64::INFINITY {
-      return(f64::INFINITY);
+      return f64::INFINITY;
     }
 
     sum_log_distance_ratios += (distance / EPSILON).log2();
@@ -62,7 +62,7 @@ pub fn random_chaotic_params() -> Params {
     }
 
     println!("Suggesting {:?} with exponent {} and visited cells {}", candidate, e, visited_cells);
-    return(candidate);
+    return candidate;
   }
 }
 

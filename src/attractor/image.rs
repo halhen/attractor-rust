@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use super::raster::Raster;
 use image::ImageBuffer;
 use colorgrad::Gradient;
@@ -70,7 +69,7 @@ pub enum Palette {
 }
 
 fn colorer(palette: Palette) -> Gradient {
-  match (palette) {
+  match palette {
     Palette::Greys => colorgrad::greys(),
     Palette::Blues => colorgrad::blues(),
     Palette::Greens => colorgrad::greens(),

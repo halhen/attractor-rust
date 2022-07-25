@@ -1,4 +1,3 @@
-use super::point::Point;
 use super::swarm::Swarm;
 
 #[derive(Debug)]
@@ -75,22 +74,4 @@ impl Raster {
 
         me
     }
-}
-
-#[cfg(test)]
-mod tests {
-
-    #[test]
-    fn raster_works() {
-        let mut s = super::Swarm::new();
-        s.add(super::Point { x: 1., y: 2. });
-        s.add(super::Point { x: 2., y: 1. });
-        s.add(super::Point { x: 0., y: 3. });
-        s.add(super::Point { x: 0., y: 3. });
-
-        let x = super::Raster::new(&s, 2, 2);
-        assert_eq!(x.density[0], 0.0);
-        assert_eq!(x.density[1], 0.5);
-        assert_eq!(x.density[2], 1.0); 
-        assert_eq!(x.density[3], 0.5);     }
 }
