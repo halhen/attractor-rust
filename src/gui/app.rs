@@ -1,11 +1,15 @@
 use eframe::egui;
-use crate::attractor::{self, quadratic2d, image::Scaling};
+use strum::IntoEnumIterator;
+use crate::attractor::{self};
+use crate::attractor::image::{Scaling, Palette};
 
 pub struct App {
     params: [f64; 12],
     // Average # iterations per pixel of render
     iterations_per_pixel: f64,
     scaling: Scaling,
+    palette: Palette,
+    palette_reverse: bool,
 
     // Cached results
     swarm: Option<attractor::swarm::Swarm>,
@@ -24,6 +28,8 @@ impl App {
             params: [1., 0., -1.4, 0., 0.3, 0., 0., 1., 0., 0., 0., 0.],
             iterations_per_pixel: 1.0,
             scaling: Scaling::Linear,
+            palette: Palette::Greys,
+            palette_reverse: false,
             swarm: None,
             raster: None,
             image: None
@@ -47,7 +53,8 @@ impl App {
             None => self.image = Some(attractor::image::render(
                 &self.raster.as_ref().unwrap(),
                 self.scaling,
-                colorgrad::blues()
+                self.palette,
+                self.palette_reverse
             ))
         };
     }
@@ -68,13 +75,22 @@ impl eframe::App for App {
 
             ui.add(egui::DragValue::new(&mut self.iterations_per_pixel).clamp_range(0.1..=100.0).speed(0.1));
             egui::ComboBox::from_label("Scaling")
-            .selected_text(format!("{:?}", self.scaling))
-            .show_ui(ui, |ui| {
-                ui.selectable_value(&mut self.scaling, Scaling::Binary, "Binary");
-                ui.selectable_value(&mut self.scaling, Scaling::Linear, "Linear");
-                ui.selectable_value(&mut self.scaling, Scaling::Sqrt, "Sqrt");
-                ui.selectable_value(&mut self.scaling, Scaling::Log, "Log");
-            });
+                .selected_text(format!("{:?}", self.scaling))
+                .show_ui(ui, |ui| {
+                    for choice in Scaling::iter() {
+                        ui.selectable_value(&mut self.scaling, choice, format!("{:?}", choice));
+                    }
+                });
+
+            egui::ComboBox::from_label("Palette")
+                .selected_text(format!("{:?}", self.palette))
+                .show_ui(ui, |ui| {
+                    for choice in Palette::iter() {
+                        ui.selectable_value(&mut self.palette, choice, format!("{:?}", choice));
+                    }
+                });
+
+            ui.add(egui::Checkbox::new(&mut self.palette_reverse, "Reverse palette"));
             
             if ui.button("Redraw").clicked() {
                 self.swarm = None;
