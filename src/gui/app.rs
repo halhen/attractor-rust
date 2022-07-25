@@ -22,9 +22,9 @@ impl AttractorSettings {
             iterations_per_pixel: 1.0,
             width: 0,
             height: 0,
-            scaling: Scaling::Linear,
-            palette: Palette::Greys,
-            palette_reverse: false
+            scaling: Scaling::Sqrt,
+            palette: Palette::Spectral,
+            palette_reverse: true
         }
     }
 }
@@ -107,9 +107,19 @@ impl App {
 impl eframe::App for App {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
-            for i in 0..self.settings.params.len() {
-                ui.add(egui::DragValue::new(&mut self.settings.params[i]).clamp_range(-1.5..=1.5).speed(0.001));
-            }
+            // X
+            ui.horizontal(|ui| {
+                for i in 0..6 {
+                    ui.add(egui::DragValue::new(&mut self.settings.params[i]).clamp_range(-1.5..=1.5).fixed_decimals(3).speed(0.001));
+                }
+            });
+            // Y
+            ui.horizontal(|ui| {
+                for i in 6..12 {
+                    ui.add(egui::DragValue::new(&mut self.settings.params[i]).clamp_range(-1.5..=1.5).fixed_decimals(3).speed(0.001));
+                }
+            });
+            
 
             if ui.button("Randomize").clicked() {
                 println!("Randomize");
@@ -119,25 +129,27 @@ impl eframe::App for App {
                 self.settings.params = attractor::lyapunov::random_chaotic_params();
             }
 
-            ui.add(egui::DragValue::new(&mut self.settings.iterations_per_pixel).clamp_range(0.1..=100.0).speed(0.1));
+            ui.horizontal(|ui| {
+                ui.add(egui::DragValue::new(&mut self.settings.iterations_per_pixel).clamp_range(0.1..=100.0).speed(0.1));
             
-            egui::ComboBox::from_label("Scaling")
-                .selected_text(format!("{:?}", self.settings.scaling))
-                .show_ui(ui, |ui| {
-                    for choice in Scaling::iter() {
-                        ui.selectable_value(&mut self.settings.scaling, choice, format!("{:?}", choice));
-                    }
-                });
-
-            egui::ComboBox::from_label("Palette")
-                .selected_text(format!("{:?}", self.settings.palette))
-                .show_ui(ui, |ui| {
-                    for choice in Palette::iter() {
-                        ui.selectable_value(&mut self.settings.palette, choice, format!("{:?}", choice));
-                    }
-                });
-
-            ui.add(egui::Checkbox::new(&mut self.settings.palette_reverse, "Reverse palette"));
+                egui::ComboBox::from_label("Scaling")
+                    .selected_text(format!("{:?}", self.settings.scaling))
+                    .show_ui(ui, |ui| {
+                        for choice in Scaling::iter() {
+                            ui.selectable_value(&mut self.settings.scaling, choice, format!("{:?}", choice));
+                        }
+                    });
+    
+                egui::ComboBox::from_label("Palette")
+                    .selected_text(format!("{:?}", self.settings.palette))
+                    .show_ui(ui, |ui| {
+                        for choice in Palette::iter() {
+                            ui.selectable_value(&mut self.settings.palette, choice, format!("{:?}", choice));
+                        }
+                    });
+    
+                ui.add(egui::Checkbox::new(&mut self.settings.palette_reverse, "Reverse palette"));
+            });            
             
             self.refresh_render(
                 ui.available_width() as usize,
