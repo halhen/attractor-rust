@@ -5,7 +5,7 @@ attractors.
 
 Status: experimental, for me as an exercise in Rust.
 
-![screencast](resource/screencast.webm)
+![screencast](resource/screencast.gif)
 
 The user can:
 
