@@ -1,17 +1,19 @@
 # Attractor
 
 Attractor is a program to search for and generate two dimensional quadratic map strange
-attractors. It is a GUI program built for native and WASM deployments.
+attractors.
+
+Status: experimental, for me as an exercise in Rust.
+
+![screencast](resource/screencast.webm)
 
 The user can:
 
-* Generate random chaotic attractors (with the help of Lyapunov exponents)
-* Tweak the parameters for an attractor, with guidance to stay in chaotic regions
+* Generate random chaotic attractors
+* Tweak the parameters for an attractor
 * Tweak image rendering settings, including:
   * Transformations, e.g. linear, square root, log densities
-  * Palettes
-  * Number of iterations
-  * Resolution
+  * Palettes  
 
 # Concepts
 
@@ -32,3 +34,5 @@ Images are generated with image.
 # Non-goals
 
 * Attractors other than two dimensional quadratic maps
+* Good UX
+* Long term maintanence
