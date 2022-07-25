@@ -7,17 +7,22 @@ type ScalingFunction = dyn Fn(f64) -> f64;
 pub enum Scaling {
   Binary,
   Linear,
+  Log,
   Sqrt,
-  Log
+  CubeRoot,
+  FourthRoot,
+  FifthRoot,
 }
 
 fn scaler(scaling: Scaling) -> Box<ScalingFunction> {
   let function = match scaling {
     Scaling::Binary => |x| if x < 0.001 {0.} else {1.},
     Scaling::Linear => |x| x,
-    Scaling::Sqrt => |x| f64::sqrt(x),
     Scaling::Log => |x| f64::log2(x + 1.),
-    // TODO: Make Log make a more powerful impact
+    Scaling::Sqrt => |x| f64::sqrt(x),
+    Scaling::CubeRoot  => |x| f64::powf(x, 1.0/3.0),
+    Scaling::FourthRoot  => |x| f64::powf(x, 1.0/4.0),
+    Scaling::FifthRoot  => |x| f64::powf(x, 1.0/5.0),
   };
 
   Box::new(function)
