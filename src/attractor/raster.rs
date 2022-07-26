@@ -1,5 +1,6 @@
 use rayon::prelude::*;
 use super::swarm::Swarm;
+//use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Raster {
@@ -40,22 +41,23 @@ impl Raster {
                 || (f64::INFINITY, f64::NEG_INFINITY, f64::INFINITY, f64::NEG_INFINITY),
                 |a, point| {
                     (
-                        if a.0 < point.x {a.0} else {point.x},
-                        if a.1 > point.x {a.1} else {point.x},
-                        if a.2 < point.y {a.2} else {point.y},
-                        if a.3 > point.y {a.3} else {point.y},
+                        a.0.min(point.x),
+                        a.1.max(point.x),
+                        a.2.min(point.y),
+                        a.3.max(point.y)
                     )
                 })
             .reduce(
                 || (f64::INFINITY, f64::NEG_INFINITY, f64::INFINITY, f64::NEG_INFINITY),
                 |a, b| {
                     (
-                        if a.0 < b.0 {a.0} else {b.0},
-                        if a.1 > b.1 {a.1} else {b.1},
-                        if a.2 < b.2 {a.2} else {b.2},
-                        if a.3 > b.3 {a.3} else {b.3},
+                        a.0.min(b.0),
+                        a.1.max(b.1),
+                        a.2.min(b.2),
+                        a.3.max(b.3)
                     )
                 });
+
         let xrange = xmax - xmin;
         let xmin = xmin - xrange * 0.1;
         let xmax = xmax + xrange * 0.1;
@@ -75,19 +77,24 @@ impl Raster {
                 x + y * width
             })
             .collect();
-        
+
+        //let start = Instant::now();
+        let mut max_count = 0.;
         for i in indices.iter() {
             // This is the most expensive operation in rasterizing.
             // Unchecked access improves throughput ~25%
             unsafe {
-                *me.density.get_unchecked_mut(*i) += 1.0;
+                let target = me.density.get_unchecked_mut(*i);
+                *target += 1.0;
+
+                // We're mostly limited by CPU cache misses. Might as well do the max calc here too
+                if *target > max_count {
+                    max_count = *target;
+                }
             }
         }
+        //println!("{:?}", start.elapsed());
 
-        let max_count = me
-            .density
-            .iter()
-            .fold(0.0, |acc: f64, count| acc.max(*count));
         me.density.iter_mut().for_each(|x| {
             *x /= max_count;
         });
