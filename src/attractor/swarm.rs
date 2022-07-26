@@ -1,13 +1,13 @@
 use super::point::Point;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Swarm {
   points: Vec<Point>,
 }
 
 impl Swarm {
   pub fn new() -> Self {
-    Self { points: vec![] }
+    Self::default()
   }
 
   pub fn add(&mut self, p: Point) {

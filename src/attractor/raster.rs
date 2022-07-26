@@ -28,8 +28,8 @@ impl Raster {
     pub fn new(swarm: &Swarm, width: usize, height: usize) -> Self {
         let mut me = Self {
             density: vec![0.0; width * height],
-            width: width,
-            height: height
+            width,
+            height
         };
 
         let xmin = swarm

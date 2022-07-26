@@ -76,7 +76,7 @@ impl App {
 
         match self.raster {
             Some(_) => {},
-            None => self.raster = Some(attractor::raster::Raster::new(&self.swarm.as_ref().unwrap(), width, height))
+            None => self.raster = Some(attractor::raster::Raster::new(self.swarm.as_ref().unwrap(), width, height))
         };
 
         if let Some(settings_rendered) = self.settings_rendered {
@@ -91,7 +91,7 @@ impl App {
             Some(_) => {},
             None => {
                 self.image = Some(attractor::image::render(
-                    &self.raster.as_ref().unwrap(),
+                    self.raster.as_ref().unwrap(),
                     self.settings.scaling,
                     self.settings.palette,
                     self.settings.palette_reverse

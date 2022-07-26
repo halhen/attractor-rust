@@ -7,7 +7,7 @@ pub struct ImageWidget<'a> {
 impl<'a> ImageWidget<'a> {
   pub fn new(image: &'a Option<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>>) -> Self {
     Self {
-      image: image
+      image
     }
   }
 }

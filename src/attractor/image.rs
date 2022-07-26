@@ -19,7 +19,7 @@ fn scaler(scaling: Scaling) -> Box<ScalingFunction> {
     Scaling::Binary => |x| if x < 0.001 {0.} else {1.},
     Scaling::Linear => |x| x,
     Scaling::Log => |x| f64::log2(x + 1.),
-    Scaling::Sqrt => |x| f64::sqrt(x),
+    Scaling::Sqrt => f64::sqrt,
     Scaling::CubeRoot  => |x| f64::powf(x, 1.0/3.0),
     Scaling::FourthRoot  => |x| f64::powf(x, 1.0/4.0),
     Scaling::FifthRoot  => |x| f64::powf(x, 1.0/5.0),
@@ -138,10 +138,8 @@ pub fn render(raster: &Raster, scaling: Scaling, palette: Palette, palette_rever
     }
   };
 
-  let image = ImageBuffer::from_fn(width, height, |x, y| {
+  ImageBuffer::from_fn(width, height, |x, y| {
     let intensity = scale(raster.intensity(x, y));
     color(intensity)
-  });
-
-  image
+  })
 }
