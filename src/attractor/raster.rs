@@ -77,8 +77,11 @@ impl Raster {
             .collect();
         
         for i in indices.iter() {
-            // This is ~75% of the Raster::new() execution time
-            me.density[*i] += 1.0;
+            // This is the most expensive operation in rasterizing.
+            // Unchecked access improves throughput ~25%
+            unsafe {
+                *me.density.get_unchecked_mut(*i) += 1.0;
+            }
         }
 
         let max_count = me
