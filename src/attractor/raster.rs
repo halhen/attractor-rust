@@ -1,6 +1,5 @@
 use rayon::prelude::*;
 use super::swarm::Swarm;
-use std::time::{Instant};
 
 #[derive(Debug)]
 pub struct Raster {
@@ -77,12 +76,10 @@ impl Raster {
             })
             .collect();
         
-        let start = Instant::now();
-        // This is ~75% of the new() execution time
         for i in indices.iter() {
+            // This is ~75% of the Raster::new() execution time
             me.density[*i] += 1.0;
         }
-        println!("{:?}", start.elapsed());
 
         let max_count = me
             .density
