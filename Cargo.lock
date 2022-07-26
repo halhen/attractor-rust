@@ -78,6 +78,7 @@ dependencies = [
  "eframe",
  "image",
  "rand",
+ "rayon",
  "strum",
  "strum_macros",
 ]

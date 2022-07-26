@@ -1,4 +1,6 @@
+use rayon::prelude::*;
 use super::swarm::Swarm;
+use std::time::{Instant};
 
 #[derive(Debug)]
 pub struct Raster {
@@ -32,37 +34,55 @@ impl Raster {
             height
         };
 
-        let xmin = swarm
+        let (xmin, xmax, ymin, ymax): (f64, f64, f64, f64) = swarm
             .points()
-            .iter()
-            .fold(f64::INFINITY, |acc, p| acc.min(p.x));
-        let xmax = swarm
-            .points()
-            .iter()
-            .fold(f64::NEG_INFINITY, |acc, p| acc.max(p.x));
+            .par_iter()
+            .fold(
+                || (f64::INFINITY, f64::NEG_INFINITY, f64::INFINITY, f64::NEG_INFINITY),
+                |a, point| {
+                    (
+                        if a.0 < point.x {a.0} else {point.x},
+                        if a.1 > point.x {a.1} else {point.x},
+                        if a.2 < point.y {a.2} else {point.y},
+                        if a.3 > point.y {a.3} else {point.y},
+                    )
+                })
+            .reduce(
+                || (f64::INFINITY, f64::NEG_INFINITY, f64::INFINITY, f64::NEG_INFINITY),
+                |a, b| {
+                    (
+                        if a.0 < b.0 {a.0} else {b.0},
+                        if a.1 > b.1 {a.1} else {b.1},
+                        if a.2 < b.2 {a.2} else {b.2},
+                        if a.3 > b.3 {a.3} else {b.3},
+                    )
+                });
         let xrange = xmax - xmin;
         let xmin = xmin - xrange * 0.1;
         let xmax = xmax + xrange * 0.1;
         let xstep = (xmax - xmin) / (width as f64);
-
-        let ymin = swarm
-            .points()
-            .iter()
-            .fold(f64::INFINITY, |acc, p| acc.min(p.y));
-        let ymax = swarm
-            .points()
-            .iter()
-            .fold(f64::NEG_INFINITY, |acc, p| acc.max(p.y));
+        
         let yrange = ymax - ymin;
         let ymin = ymin - yrange * 0.1;
         let ymax = ymax + yrange * 0.1;
         let ystep = (ymax - ymin) / (height as f64);
-
-        for point in swarm.points().iter() {
-            let x = ((point.x - xmin) / xstep).floor() as usize;
-            let y = ((point.y - ymin) / ystep).floor() as usize;
-            me.density[x + y * width] += 1.0;
+        
+        let indices: Vec<usize> = swarm
+            .points()
+            .par_iter()
+            .map(|point| {
+                let x = ((point.x - xmin) / xstep).floor() as usize;
+                let y = ((point.y - ymin) / ystep).floor() as usize;
+                x + y * width
+            })
+            .collect();
+        
+        let start = Instant::now();
+        // This is ~75% of the new() execution time
+        for i in indices.iter() {
+            me.density[*i] += 1.0;
         }
+        println!("{:?}", start.elapsed());
 
         let max_count = me
             .density
